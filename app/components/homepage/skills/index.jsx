@@ -1,9 +1,11 @@
+"use client";
 // @flow strict
 
 import { skillsData } from "@/utils/data/skills";
 import { skillsImage } from "@/utils/skill-image";
 import Image from "next/image";
 import Marquee from "react-fast-marquee";
+import ClientOnly from "../../helper/client-only";
 
 function Skills() {
   return (
@@ -27,6 +29,7 @@ function Skills() {
       </div>
 
       <div className="w-full my-12">
+        <ClientOnly>
         <Marquee
           gradient={false}
           speed={80}
@@ -63,6 +66,7 @@ function Skills() {
             </div>
           ))}
         </Marquee>
+        </ClientOnly>
       </div>
     </div>
   );
