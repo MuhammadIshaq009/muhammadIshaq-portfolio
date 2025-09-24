@@ -4,7 +4,7 @@ import { isValidEmail } from "@/utils/check-email";
 import axios from "axios";
 import { useState } from "react";
 import { TbMailForward } from "react-icons/tb";
-import { toast } from "react-toastify";
+// Avoid importing react-toastify at module scope to keep SSR safe
 
 function ContactForm() {
   const [error, setError] = useState({ email: false, required: false });
@@ -39,15 +39,20 @@ function ContactForm() {
         `/api/contact`,
         userInput
       );
-
-      toast.success("Message sent successfully!");
+      if (typeof window !== 'undefined') {
+        const { toast } = await import("react-toastify");
+        toast.success("Message sent successfully!");
+      }
       setUserInput({
         name: "",
         email: "",
         message: "",
       });
     } catch (error) {
-      toast.error(error?.response?.data?.message);
+      if (typeof window !== 'undefined') {
+        const { toast } = await import("react-toastify");
+        toast.error(error?.response?.data?.message || "Failed to send message");
+      }
     } finally {
       setIsLoading(false);
     };
