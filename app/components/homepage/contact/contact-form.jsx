@@ -1,7 +1,6 @@
 "use client";
 // @flow strict
 import { isValidEmail } from "@/utils/check-email";
-import axios from "axios";
 import { useState } from "react";
 import { TbMailForward } from "react-icons/tb";
 // Avoid importing react-toastify at module scope to keep SSR safe
@@ -35,14 +34,20 @@ function ContactForm() {
 
     try {
       setIsLoading(true);
-      const res = await axios.post(
-        `/api/contact`,
-        userInput
-      );
+      
+      // Create mailto link for static sites
+      const subject = encodeURIComponent(`Contact from ${userInput.name}`);
+      const body = encodeURIComponent(`Name: ${userInput.name}\nEmail: ${userInput.email}\n\nMessage:\n${userInput.message}`);
+      const mailtoLink = `mailto:muhammadishaqconnect@gmail.com?subject=${subject}&body=${body}`;
+      
+      // Open email client
+      window.open(mailtoLink);
+      
       if (typeof window !== 'undefined') {
         const { toast } = await import("react-toastify");
-        toast.success("Message sent successfully!");
+        toast.success("Email client opened! Please send the message.");
       }
+      
       setUserInput({
         name: "",
         email: "",
@@ -51,7 +56,7 @@ function ContactForm() {
     } catch (error) {
       if (typeof window !== 'undefined') {
         const { toast } = await import("react-toastify");
-        toast.error(error?.response?.data?.message || "Failed to send message");
+        toast.error("Failed to open email client");
       }
     } finally {
       setIsLoading(false);
